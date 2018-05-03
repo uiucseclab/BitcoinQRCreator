@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html style="height: 100%; width: 100%;">
+<head>
+	<title>Bitcoin QR Creator</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="specific.css" rel="stylesheet">
+	<link href="open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/qrcode.min.js"></script>
+	<script type="text/javascript" src="js/qr-bitcoin-generator.js"></script>
+	<script src="js/wallet-address-validator.min.js"></script>
+
+
+</head>
+<body style="height: 100%; width: 100%;">
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+	    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+		<ul class="navbar-nav mr-auto">
+		    <li class="nav-item active">
+		        <a class="nav-link" href="#">QR Generator</a>
+		    </li>
+		</ul>
+	    </div>
+	</nav>
+
+		<div class="container">
+		  <div class="page-header text-center" style="margin-top: 50px; margin-bottom:50px;">
+		    <h1 class="jumbotron-heading"> Generate QR Codes With No Fear</h1>
+	         <p class="lead text-muted">We don't store and sell your cookie to third parties. Use this generator to stay anonymous while using bitcoin.</p>    
+		  </div>  
+		</div>
+
+	   <main role="main" class="jumbotron" style="margin-bottom: 0px;">
+
+		<div class="row">
+		  <div class="col-md-7 col-centered">
+	         	<div id="qrcode" style="display:inline-block;"></div>
+	         	<div id="qrcode-link" style="text-align: center"></div>
+	         	<div class="download-button">
+	         		<a href="" id="download-qr" download="bitcoin-qr-code.png" style="display: none;" >
+		         		<button type="button" class="btn btn-default" aria-label="Left Align">
+		         		  <span class="oi oi-cloud-download" style="font-size: 30px"></span>
+		         		</button>
+	         		</a>
+	         	</div>
+		  </div>
+		  <div class="col-md-5">
+			<div class="form-group" novalidate>
+	         	  <label for="">Bitcoin Recieving Address</label>
+	         	  <input type="text" class="form-control" id="bitcoin-addr">
+	         	  <div class="invalid-feedback">
+			        The bitcoin address is not valid
+			      </div>
+			      <div class="valid-feedback">
+			        The bitcoin address is valid
+			      </div>
+
+	         	</div>
+	             <div class="form-group">
+	               <label for="transferamount">Transfer Amount (BTC)</label>
+	               <input type="text" class="form-control" id="transfer-amount" placeholder="Amount">
+                  <div class="invalid-feedback">
+       		        The amount of bitcoin is not valid
+       		      </div>
+       		      <div class="valid-feedback">
+       		        The amount of bitcoin is valid
+       		      </div>
+	             </div>
+			<button onclick="generateQRCode()" class="btn btn-default">Generate QR Code</button>
+	           </div>
+	           <div id="text"></div>
+		  
+		  </div>
+	       </div>
+	     </section>
+		</div>
+
+	   </main>
+	
+	<script type="text/javascript">
+
+		function validDecimal(txt)
+		   {  
+		        return txt.match(/^\d*(.\d*)?$/);
+		   
+		   }
+
+		$('#transfer-amount').change(function(){
+			if($('#transfer-amount').val() == ""){
+				 $('#transfer-amount').removeClass('is-invalid');
+				 $('#transfer-amount').removeClass('is-valid');
+			}else if(validDecimal($('#transfer-amount').val())){
+			    $('#transfer-amount').removeClass('is-invalid');
+				$('#transfer-amount').addClass('is-valid');
+			}   
+			else{
+			    $('#transfer-amount').addClass('is-invalid');
+				$('#transfer-amount').removeClass('is-valid');
+			}
+			    
+		});
+
+
+		$('#bitcoin-addr').change(function(){
+			var valid = WAValidator.validate($('#bitcoin-addr').val(), 'bitcoin');
+			if($('#bitcoin-addr').val() == ""){
+				$('#bitcoin-addr').removeClass('is-invalid');
+				$('#bitcoin-addr').removeClass('is-valid');
+			}else if(valid){
+			    $('#bitcoin-addr').removeClass('is-invalid');
+				$('#bitcoin-addr').addClass('is-valid');
+			}   
+			else{
+			    $('#bitcoin-addr').addClass('is-invalid');
+				$('#bitcoin-addr').removeClass('is-valid');
+			}
+			    
+		});
+
+		function generateQRCode(){
+
+			$("#qrcode").empty();
+
+			createQRCode(document.getElementById("qrcode"),{
+				address: $('#bitcoin-addr').val(),
+				amount : $('#transfer-amount').val()
+			});
+
+			$('#qrcode-link').text($('#qrcode').attr('title'));
+
+			setTimeout(
+			  function() 
+			  {
+			    $("#download-qr").attr("href", $('#qrcode').children('img').attr("src"));
+				$("#download-qr").show();
+			  }, 200);
+
+		}
+	</script>
+
+</body>
+</html>
